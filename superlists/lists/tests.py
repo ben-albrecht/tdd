@@ -1,10 +1,11 @@
 from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 
 from lists.views import home_page
 
-# Create your __unit__ tests here.
+# Unit Tests
 
 class HomePageTest(TestCase):
 
@@ -29,8 +30,11 @@ class HomePageTest(TestCase):
         # Django's
         request = HttpRequest()
         response = home_page(request)
+        expected_html = render_to_string('home.html')
+        # Compare strings instead of bytes (recall response.content is bytes)
+        self.assertEqual(response.content.decode(), expected_html)
 
         # response.content is byte code, so we convert strings to bytes via "b'string'"
         self.assertTrue(response.content.startswith(b'<html>'))
         self.assertIn(b'<title>To-Do lists</title>', response.content)
-        self.assertTrue(response.content.endswith(b'</html>'))
+        self.assertTrue(response.content.strip().endswith(b'</html>'))
