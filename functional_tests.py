@@ -41,11 +41,12 @@ class NewVisitorTest(unittest.TestCase):
 
         # The item is added to the list
         # The user is immediately prompted for another item to add to the list
-        inputbox.send_keys(keys.ENTER)
+        inputbox.send_keys(Keys.ENTER)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
-                any(row.text == '1: Buy apples' for row in rows)
+                any(row.text == '1: Buy apples' for row in rows),
+                "New item did not appear in table after entering to-do item"
         )
 
         self.fail('Finish the damn test')
