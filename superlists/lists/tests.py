@@ -27,7 +27,7 @@ class HomePageTest(TestCase):
             To-Do lists in the title
         """
 
-        # Django's
+        # Django's request
         request = HttpRequest()
         response = home_page(request)
         expected_html = render_to_string('home.html')
@@ -38,3 +38,31 @@ class HomePageTest(TestCase):
         self.assertTrue(response.content.startswith(b'<html>'))
         self.assertIn(b'<title>To-Do lists</title>', response.content)
         self.assertTrue(response.content.strip().endswith(b'</html>'))
+
+    def test_home_page_can_save_a_POST_request(self):
+        """
+        assert that the home_page(request) returns an html file with
+            To-Do lists in the title
+        """
+
+        # Django's HttpRequest object
+        request = HttpRequest()
+        # The request method will be POST (we are submitting data rather than GETting it)
+        request.method = 'POST'
+        # request.POST acts like a dictionary of attributes, and we set the 'item_text' attribute
+        request.POST['item_text'] = 'a new list item'
+
+        # We submit our request to the home_page, which communicates with the Django server(?) and returns a response
+        response = home_page(request)
+
+        # That response's content should contain the 'item_text' we provided in our POST request
+        self.assertIn('a new list item', response.content.decode())
+
+        # We replace new_item_text with our POST 'item_text', to verify our template is replacing the correct variable
+        expected_html = render_to_string(
+                'home.html',
+                { 'new_item_text' : 'a new list item' }
+                )
+
+        # This checks that our template is working as intended
+        self.assertEqual(response.content.decode(), expected_html)

@@ -5,6 +5,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
+import time
 
 # Functional Tests
 
@@ -42,12 +43,32 @@ class NewVisitorTest(unittest.TestCase):
         # The item is added to the list
         # The user is immediately prompted for another item to add to the list
         inputbox.send_keys(Keys.ENTER)
+
+        # Gives us some time to see what happened
+        #time.sleep(10)
+
+        #table = self.browser.find_element_by_id('id_list_table')
+
+
+
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-                any(row.text == '1: Buy apples' for row in rows),
-                "New item did not appear in table after entering to-do item"
-        )
+        self.assertIn('1: Buy apples', [row.text for row in rows])
+        #self.assertTrue(
+        #        any(row.text == '1: Buy apples' for row in rows),
+        #        "New item did not appear in table after entering to-do item -- it's text was \n%s" %
+        #        (table.text,)
+        #)
+
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Eat apples')
+        inputbox.send_keys(Keys.ENTER)
+
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn('1: Buy apples', [row.text for row in rows])
+        self.assertIn('2: Eat apples', [row.text for row in rows])
+
 
         self.fail('Finish the damn test')
         # The site generates a unique URL for this list, and the user accesses this URL to verify their items were saved
