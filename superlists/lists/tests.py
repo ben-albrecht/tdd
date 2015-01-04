@@ -56,6 +56,16 @@ class HomePageTest(TestCase):
         # We submit our request to the home_page, which communicates with the Django server(?) and returns a response
         response = home_page(request)
 
+
+        ## Code Smell: POST test too long?
+        # Check that our list item is saved
+        # 1 item saved
+        self.assertEqual(Item.objects.count(), 1)
+        # That item is named correctly 
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'a new list item')
+
+
         # That response's content should contain the 'item_text' we provided in our POST request
         self.assertIn('a new list item', response.content.decode())
 
@@ -67,6 +77,12 @@ class HomePageTest(TestCase):
 
         # This checks that our template is working as intended
         self.assertEqual(response.content.decode(), expected_html)
+
+
+    def test_home_page_only_saves_items_when_necessary(self):
+        request = HttpRequest()
+        home_page(request)
+        self.assertEqual(Item.objects.count(), 0)
 
 
 class ItemModelTest(TestCase):
